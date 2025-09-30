@@ -39,6 +39,8 @@ android {
 
     dependencies {
         implementation "com.pusher:pusher-java-client:2.2.5"
+        implementation "com.pusher:pusher-java-client:2.4.0"
+        implementation 'com.google.code.gson:gson:2.8.9'
     }
 }
 
