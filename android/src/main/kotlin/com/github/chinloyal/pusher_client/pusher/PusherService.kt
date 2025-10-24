@@ -2,14 +2,11 @@ package com.github.chinloyal.pusher_client.pusher
 
 import android.util.Log
 import com.github.chinloyal.pusher_client.core.contracts.MChannel
-import com.github.chinloyal.pusher_client.core.utils.JsonEncodedConnectionFactory
 import com.github.chinloyal.pusher_client.pusher.listeners.*
 import com.google.gson.Gson
 import com.pusher.client.Pusher
 import com.pusher.client.PusherOptions
 import com.pusher.client.connection.ConnectionState
-import com.pusher.client.util.HttpAuthorizer
-import com.pusher.client.util.UrlEncodedConnectionFactory
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.EventChannel.EventSink
@@ -88,11 +85,9 @@ class PusherService : MChannel {
                 val auth: JSONObject = options.getJSONObject("auth")
                 val endpoint: String = auth.getString("endpoint")
                 val headersMap: Map<String, String> = Gson().fromJson<Map<String, String>>(auth.getString("headers"), Map::class.java)
-                val encodedConnectionFactory = if (headersMap.containsValue("application/json"))
-                    JsonEncodedConnectionFactory() else UrlEncodedConnectionFactory()
 
-                val authorizer = HttpAuthorizer(endpoint,  encodedConnectionFactory)
-                authorizer.setHeaders(headersMap)
+                // Use custom authorizer that handles async auth with CountDownLatch
+                val authorizer = NuChannelAuthorizer(endpoint, headersMap)
 
                 pusherOptions.authorizer = authorizer
             }
